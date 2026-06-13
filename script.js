@@ -9,7 +9,11 @@ const CONFIG = {
         { name: 'Mbr_Hridoy', role: 'Creative Lead' },
         { name: 'Mbr_Adi', role: 'Brand Specialist' },
         { name: 'Mbr_Tousif', role: 'Video Editor' },
-        { name: 'Mbr_Maidul', role: 'Junior Designer' }
+        { name: 'Mbr_Maidul', role: 'Junior Designer' },
+        { name: 'Mbr_Shafin', role: 'Team Member' },
+        { name: 'Mbr_Rion', role: 'Team Member' },
+        { name: 'Mbr_alvi', role: 'Team Member' },
+        { name: 'Mbr_Tasneem', role: 'Team Member' }
     ]
 };
 
@@ -216,8 +220,7 @@ function parseCSV(text) {
     return rows;
 }
 
-// ===== Extract Tasks by Date =====
-function extractTasksForDate(rows, targetDate) {
+// ===== Extract Tasks by Date =====nfunction extractTasksForDate(rows, targetDate) {
     const day = targetDate.getDate();
     const monthNames = ['January', 'February', 'March', 'April', 'May', 'June',
         'July', 'August', 'September', 'October', 'November', 'December'];
@@ -328,7 +331,7 @@ function renderTasks(tasks) {
             </div>
             <div class="task-meta">
                 ${t.project ? `<span class="meta-tag project">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/[...]`
                     ${escapeHtml(t.project)}
                 </span>` : ''}
                 ${t.type ? `<span class="meta-tag type">
@@ -340,7 +343,7 @@ function renderTasks(tasks) {
                     ${escapeHtml(t.time)}
                 </span>` : ''}
                 ${t.qty && t.qty !== '1' ? `<span class="meta-tag qty">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14[...]`
                     Qty: ${escapeHtml(t.qty)}
                 </span>` : ''}
             </div>
