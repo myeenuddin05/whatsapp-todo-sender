@@ -9,11 +9,7 @@ const CONFIG = {
         { name: 'Mbr_Hridoy', role: 'Creative Lead' },
         { name: 'Mbr_Adi', role: 'Brand Specialist' },
         { name: 'Mbr_Tousif', role: 'Video Editor' },
-        { name: 'Mbr_Maidul', role: 'Junior Designer' },
-        { name: 'Mbr_Shafin', role: 'Team Member' },
-        { name: 'Mbr_Rion', role: 'Team Member' },
-        { name: 'Mbr_alvi', role: 'Team Member' },
-        { name: 'Mbr_Tasneem', role: 'Team Member' }
+        { name: 'Mbr_Maidul', role: 'Junior Designer' }
     ]
 };
 
@@ -220,7 +216,8 @@ function parseCSV(text) {
     return rows;
 }
 
-// ===== Extract Tasks by Date =====nfunction extractTasksForDate(rows, targetDate) {
+// ===== Extract Tasks by Date =====
+function extractTasksForDate(rows, targetDate) {
     const day = targetDate.getDate();
     const monthNames = ['January', 'February', 'March', 'April', 'May', 'June',
         'July', 'August', 'September', 'October', 'November', 'December'];
@@ -267,8 +264,7 @@ function parseCSV(text) {
     return tasks;
 }
 
-// ===== View 1: Render Individual Tasks =====
-async function fetchIndividualTasks() {
+// ===== View 1: Render Individual Tasks =====nasync function fetchIndividualTasks() {
     const activeMember = CONFIG.members[currentMemberIndex];
     const loadingState = document.getElementById('loadingState');
     const emptyState = document.getElementById('emptyState');
@@ -401,8 +397,7 @@ function sendToWhatsApp() {
     showToast('📤', `Opening WhatsApp for ${activeMember.name.replace('Mbr_', '')}...`);
 }
 
-// ===== View 2: Team Dashboard Implementation =====
-async function fetchDashboardData() {
+// ===== View 2: Team Dashboard Implementation =====nasync function fetchDashboardData() {
     const loadingPanel = document.getElementById('dashboardLoading');
     const progressList = document.getElementById('dashboardProgressList');
     const grid = document.getElementById('dashboardGrid');
@@ -438,185 +433,4 @@ async function fetchDashboardData() {
                 // Show completion status in load progress card
                 if (valLabel) {
                     valLabel.textContent = 'Loaded';
-                    valLabel.style.color = 'var(--accent-green)';
                 }
-                if (spinner) {
-                    spinner.outerHTML = '<span class="fetch-done-icon">✓</span>';
-                }
-                return { member, tasks, error: false };
-            } catch (err) {
-                if (valLabel) {
-                    valLabel.textContent = 'Error';
-                    valLabel.style.color = 'var(--accent-rose)';
-                }
-                if (spinner) {
-                    spinner.outerHTML = '<span style="color: var(--accent-rose)">✗</span>';
-                }
-                return { member, tasks: [], error: true };
-            }
-        });
-
-        const results = await Promise.all(promises);
-        loadingPanel.classList.add('hidden');
-        
-        // Render Dashboard Cards
-        renderDashboard(results);
-        setStatus('success', 'Team dashboard loaded successfully');
-    } catch (err) {
-        console.error(err);
-        loadingPanel.classList.add('hidden');
-        setStatus('error', 'Dashboard loading failed');
-    }
-}
-
-function renderDashboard(results) {
-    const grid = document.getElementById('dashboardGrid');
-    grid.innerHTML = results.map(({ member, tasks, error }) => {
-        const cleanName = member.name.replace('Mbr_', '');
-        if (error) {
-            return `
-                <div class="dashboard-card">
-                    <div class="card-header-main">
-                        <div class="card-member-info">
-                            <div class="card-avatar" style="background: var(--accent-rose)">${cleanName[0]}</div>
-                            <div>
-                                <div class="card-name">${cleanName}</div>
-                                <div class="card-role">${member.role}</div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="status-indicator">
-                        <div class="status-dot error"></div>
-                        <span style="color: var(--accent-rose); font-size: 0.8rem">Failed to load connection data</span>
-                    </div>
-                </div>
-            `;
-        }
-
-        const totalTasks = tasks.length;
-        const doneTasks = tasks.filter(t => t.status.toLowerCase() === 'done').length;
-        const progressPercent = totalTasks > 0 ? Math.round((doneTasks / totalTasks) * 100) : 0;
-        
-        // Determine theme of progress bar based on status
-        const isDone = doneTasks === totalTasks && totalTasks > 0;
-        const barTheme = isDone ? '' : 'purple';
-        
-        return `
-            <div class="dashboard-card">
-                <div class="card-header-main">
-                    <div class="card-member-info">
-                        <div class="card-avatar">${cleanName[0]}</div>
-                        <div>
-                            <div class="card-name">${cleanName}</div>
-                            <div class="card-role">${member.role}</div>
-                        </div>
-                    </div>
-                    <span class="task-status ${isDone ? 'done' : 'progress'}">
-                        ${doneTasks}/${totalTasks} Tasks
-                    </span>
-                </div>
-
-                <div class="card-progress-section">
-                    <div class="progress-label-row">
-                        <span>Progress</span>
-                        <span>${progressPercent}%</span>
-                    </div>
-                    <div class="progress-bar-container">
-                        <div class="progress-bar-fill ${barTheme} ${totalTasks === 0 ? 'empty' : ''}" style="width: ${progressPercent}%"></div>
-                    </div>
-                </div>
-
-                <!-- Expandable Tasks Section -->
-                <div class="dashboard-expandable-tasks">
-                    ${totalTasks === 0 ? `
-                        <div class="status-indicator" style="justify-content: center; padding: 12px 0;">
-                            <span style="color: var(--text-muted); font-size: 0.8rem;">No tasks assigned</span>
-                        </div>
-                    ` : tasks.map(t => `
-                        <div class="dash-task-row">
-                            <span class="dash-task-text" title="${escapeHtml(t.details)}">${escapeHtml(t.details)}</span>
-                            <span class="dash-task-status ${getBadgeClass(t.status)}">${escapeHtml(t.status)}</span>
-                        </div>
-                    `).join('')}
-                </div>
-
-                <div class="card-actions">
-                    <button class="card-btn" onclick="jumpToMember(${CONFIG.members.indexOf(member)})">
-                        View Details
-                    </button>
-                    ${totalTasks > 0 ? `
-                        <button class="card-btn primary-action" onclick="quickSendWhatsApp(${CONFIG.members.indexOf(member)})">
-                            WhatsApp
-                        </button>
-                    ` : ''}
-                </div>
-            </div>
-        `;
-    }).join('');
-}
-
-function jumpToMember(index) {
-    currentMemberIndex = index;
-    document.getElementById('memberSelect').value = index;
-    switchView('tasks');
-}
-
-function quickSendWhatsApp(index) {
-    const member = CONFIG.members[index];
-    fetchSheetData(member.name).then(rows => {
-        const tasks = extractTasksForDate(rows, currentDate);
-        if (tasks.length > 0) {
-            // Build the string directly
-            const formattedDateStr = currentDate.toLocaleDateString('en-US', {
-                weekday: 'long', day: 'numeric', month: 'long', year: 'numeric'
-            });
-            const displayName = member.name.replace('Mbr_', '');
-            let msg = `📋 *Daily To-Do List | ${displayName}*\n`;
-            msg += `📅 ${formattedDateStr}\n`;
-            msg += `━━━━━━━━━━━━━━━━━\n\n`;
-            tasks.forEach((t, i) => {
-                const statusIcon = t.status.toLowerCase() === 'done' ? '✅' : '⏳';
-                msg += `${i + 1}. ${statusIcon} *${t.details}*\n`;
-            });
-            const doneCount = tasks.filter(t => t.status.toLowerCase() === 'done').length;
-            msg += `\n━━━━━━━━━━━━━━━━━\n📊 *Summary:* ${doneCount}/${tasks.length} completed\n🤖 _Sent via Daily Task Hub_`;
-            
-            const url = `https://api.whatsapp.com/send?text=${encodeURIComponent(msg)}`;
-            window.open(url, '_blank');
-            showToast('📤', `Opening WhatsApp for ${displayName}...`);
-        } else {
-            showToast('⚠️', 'No tasks to send for this member');
-        }
-    }).catch(err => {
-        console.error(err);
-        showToast('❌', 'Error preparing message');
-    });
-}
-
-// ===== Status & Helpers =====
-function setStatus(type, text) {
-    const dot = document.getElementById('statusDot');
-    const label = document.getElementById('statusText');
-    if (dot && label) {
-        dot.className = 'status-dot ' + type;
-        label.textContent = text;
-    }
-}
-
-function showToast(icon, text) {
-    const toast = document.getElementById('toast');
-    document.getElementById('toastIcon').textContent = icon;
-    document.getElementById('toastText').textContent = text;
-    toast.classList.remove('hidden');
-    toast.classList.add('show');
-    setTimeout(() => {
-        toast.classList.remove('show');
-        setTimeout(() => toast.classList.add('hidden'), 400);
-    }, 3000);
-}
-
-function escapeHtml(str) {
-    const div = document.createElement('div');
-    div.textContent = str;
-    return div.innerHTML;
-}
